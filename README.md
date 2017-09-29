@@ -1,5 +1,5 @@
 # wordpress
-## Docker HA image automate wordpress deploy on vagrant host with mysql and reverse proxy using ansible playbook provisioning
+Automatic deploy on vagrant host with docker images: wordpress, mysql and traefik reverse proxy using ansible playbook provisioning
 
 ### Execute in shell next commands:
 ```
