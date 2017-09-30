@@ -7,5 +7,5 @@ Automatic deploy on vagrant host with docker images: wordpress, mysql and traefi
 ```
 Run this command under root user or another one which is in sudoers list
 ```
-2. cd wordpress && ansible-playbook playbook.yml --ask-sudo-pass        		 
+2. cd wordpress && ansible-playbook playbook-all-sudo.yml --ask-sudo-pass        		 
 ```
