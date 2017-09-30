@@ -1,5 +1,5 @@
 # wordpress
-Deploment template on vagrant host with docker images: wordpress, mysql and traefik reverse proxy using ansible playbook provisioning
+Deploment template on vagrant host with docker images: wordpress, mysql and traefik reverse proxy using ansible playbook
 
 ### Execute in shell next commands:
 ```
