@@ -1,0 +1,139 @@
+--- 
+- hosts: localhost
+#  gather_facts: no
+#  become: yes
+#  become_user: root
+  tasks:
+  - name: install all vagrant prereqesites
+    shell: yum -y install gcc dkms make qt libgomp patch kernel-headers kernel-devel binutils glibc-headers glibc-devel font-forge nano
+    become: true
+
+  - name: add virtualbox repo
+    shell:  cd /etc/yum.repos.d/ && wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
+    become: true
+
+  - name: install virtualbox
+    shell: yum install -y VirtualBox-5.1
+    become: true
+
+  - name: install virtualbox kernel module
+    shell: sudo /usr/lib/virtualbox/vboxdrv.sh setup
+    become: true
+
+  - name: check vagrant VM Centos/7 status and delete it
+    shell: if [ vagrant centos/7 status ]; then vagrant destroy --force; fi   
+    become: true    
+   
+  - name: delete old version of vagrant
+    become: true
+    yum:
+      name: vagrant
+      state: absent
+
+  - name: delete old vagrant file
+    shell: if [ -f ~/Vagrantfile ]; then rm -Rf ~/Vagrantfile; fi
+    become: true
+
+  - name: install new version of vagrant
+    shell: yum -y install https://releases.hashicorp.com/vagrant/2.0.0/vagrant_2.0.0_x86_64.rpm
+    become: true
+
+  - name: vagrant init
+    shell: vagrant init --force centos/7
+    become: true
+
+  - name: disabling vagrant rsync
+    shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/Vagrantfile
+#    become: true
+
+  - name: vagrant up
+    shell:  vagrant up
+    become: true
+
+  - name: install virtualbox guest additions 
+    shell: vagrant plugin install vagrant-vbguest 
+    become: true 
+    
+  - name: install epel-release on vagrant guest os
+    shell: vagrant ssh -c 'sudo yum install -y epel-release'
+    become: true
+    
+  - name: install XFCE on vagrant guest os
+    shell: vagrant ssh -c 'sudo yum groupinstall -y "Xfce"'
+    become: true
+ 
+  - name: install X11 on vagrant guest os
+    shell: vagrant ssh -c 'sudo yum groupinstall -y "X11"'
+    become: true
+     
+  - name: install docker repo on vagrant guest os
+    shell: vagrant ssh -c 'sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
+    become: true
+    
+  - name: install docker on vagrant guest os
+    shell: vagrant ssh -c 'sudo yum install -y docker-ce firefox'
+    become: true
+     
+  - name: start docker
+    shell: vagrant ssh -c 'sudo service docker start'
+    become: true
+  
+  - name: enable docker 
+    shell: vagrant ssh -c 'sudo chkconfig docker on'
+    become: true
+    
+  - name: create docker swarm 
+    shell: vagrant ssh -c 'sudo docker swarm init'
+    become: true 
+
+  - name: deploy overlay network 
+    shell: vagrant ssh -c 'sudo docker network create -d overlay net'
+    become: true
+    
+  - name: install vagrant scp
+    shell: vagrant plugin install vagrant-scp
+    become: true
+    
+  - name: copy traefik.yml
+    shell: vagrant scp traefik.yml default:.
+    become: true
+
+  - name: copy wordpress.yml
+    shell: vagrant scp wordpress.yml default:.
+    become: true
+        
+  - name: deploy proxy
+    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=traefik.yml traefik'
+    become: true
+        
+  - name: deploy wordpress
+    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=wordpress.yml wordpress-sticky'
+    become: true
+    
+  - name: changing graphical target runlevel
+    shell: vagrant ssh -c "sudo systemctl set-default graphical.target"
+    become: true  
+
+  - name: start GUI 
+    shell: vagrant ssh -c 'sudo startx'
+    become: true 
+
+  - name: vagrant halt
+    shell: vagrant halt
+    become: true
+    
+  - name: virtualbox restart
+    shell: sudo /usr/lib/virtualbox/vboxdrv.sh restart
+    become: true
+  
+  - name: changing vagrantfile parameters
+    shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -- 's/#   vb.gui = true/vb.gui = true/g' ~/Vagrantfile && sed -i -- 's/# end/end/g' ~/Vagrantfile
+#    become: true
+  
+  - name: vagrant up 2
+    shell: export DISPLAY=':0' && vagrant up
+    become: true
+
+  - name: print message
+    debug:
+      msg: "Vagrant provisioning is completed. Now please start vagrant manually by typing 'vagrant up' in order to work with it in interactive mode. Please use user:\ 'vagrant', password:\ 'vagrant' for OS login"
