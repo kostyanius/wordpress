@@ -12,3 +12,4 @@ Run this command under root user or another one which is in sudoers list
 ```
 3. Once the provision is completed use following credentials for login (user: 'vagrant', password: 'vagrant')
 ```
+Some glitch is possible with Full Window Mode. To fix it please click several times on VirtualBox -> View -> Full Screen.
