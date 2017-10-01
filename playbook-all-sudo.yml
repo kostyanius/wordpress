@@ -15,14 +15,14 @@
   - name: install virtualbox
     shell: yum install -y VirtualBox-5.1
     become: true
+    
+  - name: vagrant destroy previous VM (if existst)
+    shell: if which vagrant; then vagrant destroy default --force; fi
+#    become: true
 
   - name: install virtualbox kernel module
     shell: /usr/lib/virtualbox/vboxdrv.sh setup
     become: true
-
-  - name: check vagrant VM Centos/7 status and delete it
-    shell: if [ vagrant centos/7 status ]; then vagrant destroy --force; fi   
-    become: true    
    
   - name: delete old version of vagrant
     become: true
@@ -57,7 +57,6 @@
   - name: vagrant reload
     shell: vagrant reload
 #    become: true
- 
  
   - name: install epel-release on vagrant guest os
     shell: vagrant ssh -c 'sudo yum install -y epel-release'
