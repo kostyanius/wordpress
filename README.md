@@ -10,5 +10,5 @@ Run this command under root user or another one which is in sudoers list
 2. cd wordpress && ansible-playbook playbook-all-sudo.yml --ask-sudo-pass        		 
 ```
 ```
-3. Since the provision is completed use following credentials for Guest OS authorization (user: 'vagrant', password: 'vagrant')
+3. Since the provision is completed use following credentials for Guest OS login (user: 'vagrant', password: 'vagrant')
 ```
