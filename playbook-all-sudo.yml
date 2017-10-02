@@ -131,7 +131,7 @@
     become: true
   
   - name: changing vagrantfile parameters
-    shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -- 's/#   vb.gui = true/vb.gui = true/g' ~/Vagrantfile && sed -i -- 's/# end/end/g' ~/Vagrantfile
+    shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/wordpress/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/wordpress/Vagrantfile && sed -i -- 's/#   vb.gui = true/vb.gui = true/g' ~/wordpress/Vagrantfile && sed -i -- 's/# end/end/g' ~/wordpress/Vagrantfile
 #    become: true
   
   - name: vagrant reload with GUI
