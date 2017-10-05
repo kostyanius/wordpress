@@ -138,6 +138,25 @@
     shell: export DISPLAY=':0' && vagrant reload
 #    become: true
 
+  - name: install docker machine
+    shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
+#   become: true
+
+  - name: install docker machine1
+    shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-1"
+
+  - name: install docker machine2
+    shell: vagrant ssh -c "docker-machine create --driver virtualbox node-2"
+    
+  - name: install docker machine2
+    shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-3"
+  
+  - name: hosts
+    shell: vagrant ssh -c "echo $(docker-machine ip node-0) node-0 >> /etc/hosts" && vagrant ssh -c "echo $(docker-machine ip node-1) node-1 >> /etc/hosts" && vagrant ssh -c "echo $(docker-machine ip node-2) node-2 >> /etc/hosts"
+    
+  - name: init docker swarm 
+    shell: vagrant ssh -c "docker-machine ssh node-0 "docker swarm init > ~/swarm""
+
   - name: print message
     debug:
       msg: "Vagrant provisioning is completed. Now please start vagrant manually by typing 'vagrant up' in order to work with it in interactive mode. Please use user:\ 'vagrant', password:\ 'vagrant' for OS login"
