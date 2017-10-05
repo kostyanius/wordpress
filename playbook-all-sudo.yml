@@ -43,7 +43,7 @@
 #    become: true
 
   - name: disabling vagrant rsync
-    shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
+    shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/Vagrantfile
 #    become: true
 
   - name: vagrant up
