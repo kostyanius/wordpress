@@ -122,10 +122,6 @@
     shell: vagrant ssh -c 'sudo startx'
 #    become: true 
 
-  - name: virtualbox restart
-    command: /usr/lib/virtualbox/vboxdrv.sh restart
-    become: true
-  
   - name: install docker machine
     shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
 #   become: true
@@ -148,6 +144,10 @@
   - name: vagrant halt
     shell: vagrant halt
 #    become: true
+
+  - name: virtualbox restart
+    command: /usr/lib/virtualbox/vboxdrv.sh restart
+    become: true
 
   - name: changing vagrantfile parameters
     shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -$
