@@ -122,17 +122,9 @@
     shell: vagrant ssh -c 'sudo startx'
 #    become: true 
 
-  - name: vagrant halt
-    shell: vagrant halt
-#    become: true
-    
   - name: virtualbox restart
     command: /usr/lib/virtualbox/vboxdrv.sh restart
     become: true
-  
-  - name: changing vagrantfile parameters
-    shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -- 's/#   vb.gui = true/vb.gui = true/g' ~/Vagrantfile && sed -i -- 's/# end/end/g' ~/Vagrantfile
-#    become: true
   
   - name: install docker machine
     shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
@@ -152,6 +144,14 @@
     
   - name: init docker swarm 
     shell: vagrant ssh -c "docker-machine ssh node-0 "docker swarm init > ~/swarm""
+
+  - name: vagrant halt
+    shell: vagrant halt
+#    become: true
+
+  - name: changing vagrantfile parameters
+    shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -$
+#    become: true
 
   - name: vagrant reload with GUI
     shell: export DISPLAY=':0' && vagrant reload
