@@ -126,13 +126,13 @@
     shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
 #   become: true
 
-  - name: install docker machine1
+  - name: create docker machine1
     shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-1"
 
-  - name: install docker machine2
+  - name: create docker machine2
     shell: vagrant ssh -c "docker-machine create --driver virtualbox node-2"
     
-  - name: install docker machine2
+  - name: create docker machine2
     shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-3"
   
   - name: hosts
