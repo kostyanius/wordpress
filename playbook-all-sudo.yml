@@ -59,7 +59,7 @@
 #    become: true
  
   - name: install epel-release on vagrant guest os
-    shell: vagrant ssh -c 'sudo yum install -y epel-release'
+    shell: vagrant ssh -c 'sudo yum install -y epel-release wget'
 #    become: true
     
   - name: install XFCE on vagrant guest os
@@ -121,6 +121,14 @@
   - name: start GUI 
     shell: vagrant ssh -c 'sudo startx'
 #    become: true 
+
+  - name: add virtualbox repo
+    shell: vagrant ssh -c "sudo wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo"
+#    become: true
+
+  - name: install virtualbox
+    shell: vagrant ssh -c "sudo yum install -y VirtualBox-5.1"
+#    become: true
 
   - name: install docker machine
     shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
