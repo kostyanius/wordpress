@@ -8,8 +8,8 @@
     shell: yum group install -y "Development Tools" && yum -y install qemu-kvm libvirt virt-install bridge-utils libvirt-devel  libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c
     become: true
     
-  - name: vagrant destroy previous VM (if existst)
-    shell: if which vagrant; then vagrant destroy default --force; fi
+#  - name: vagrant destroy previous VM (if existst)
+#    shell: if which vagrant; then vagrant destroy default --force; fi
 #    become: true
 
   - name: delete old version of vagrant
@@ -31,17 +31,17 @@
 #    become: true
   
   - name: add Vagrant box
-    shell: vagrant box add Centos/7 --provider=libvirt    
-    become: sudo
+    shell: vagrant box add Centos/7 --provider=libvirt --force    
+#    become: sudo
 
   - name: Vagrant init
-    shell: Vagrant init --force Centos/7
+    shell: vagrant init --force centos/7
 
   - name: disabling vagrant rsync
-    shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/Vagrantfile
+    shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
 #    become: true
 
-  - name: vagrant up --provice libvirt
+  - name: vagrant up
     shell:  vagrant up
 #   become: true
 
