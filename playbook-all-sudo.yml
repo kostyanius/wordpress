@@ -35,14 +35,14 @@
 #    become: sudo
 
   - name: Vagrant init
-    shell: vagrant init --force centos/7
+    shell: vagrant init --force centos/7 --provider libvirt
 
   - name: disabling vagrant rsync
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
 #    become: true
 
   - name: vagrant up
-    shell:  vagrant up
+    shell:  vagrant up --provider=libvirt
 #   become: true
 
 #  - name: install virtualbox guest additions 
