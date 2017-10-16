@@ -5,24 +5,16 @@
 #  become_user: root
   tasks:
   - name: install all vagrant prereqesites
-    shell: yum -y install gcc dkms make qt libgomp patch kernel-headers kernel-devel binutils glibc-headers glibc-devel font-forge nano
-    become: true
-
-  - name: add virtualbox repo
-    shell:  cd /etc/yum.repos.d/ && wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
-    become: true
-
-  - name: install virtualbox
-    shell: yum install -y VirtualBox-5.1
+    shell: yum group install -y "Development Tools" && yum -y install qemu-kvm libvirt virt-install bridge-utils libvirt-devel  libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c
     become: true
     
   - name: vagrant destroy previous VM (if existst)
     shell: if which vagrant; then vagrant destroy default --force; fi
 #    become: true
 
-  - name: install virtualbox kernel module
-    shell: /usr/lib/virtualbox/vboxdrv.sh setup
-    become: true
+#  - name: install virtualbox kernel module
+#    shell: /usr/lib/virtualbox/vboxdrv.sh setup
+#    become: true
    
   - name: delete old version of vagrant
     become: true
@@ -38,6 +30,13 @@
     shell: yum -y install https://releases.hashicorp.com/vagrant/2.0.0/vagrant_2.0.0_x86_64.rpm
     become: true
 
+  - name: install libvirt module
+    shell: vagrant plugin install vagrant-libvirt
+#    become: true
+  
+  - name: add Vagrant box
+    vagrant box add Centos/7 --provider=libvirt    
+
   - name: vagrant init
     shell: vagrant init --force centos/7
 #    become: true
@@ -46,16 +45,16 @@
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/Vagrantfile
 #    become: true
 
-  - name: vagrant up
+  - name: vagrant up --provice libvirt
     shell:  vagrant up
 #   become: true
 
-  - name: install virtualbox guest additions 
-    shell: vagrant plugin install vagrant-vbguest 
+#  - name: install virtualbox guest additions 
+#    shell: vagrant plugin install vagrant-vbguest 
 #    become: true 
  
-  - name: vagrant reload
-    shell: vagrant reload
+#  - name: vagrant reload
+#    shell: vagrant reload
 #    become: true
  
   - name: install epel-release on vagrant guest os
