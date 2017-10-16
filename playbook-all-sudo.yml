@@ -12,10 +12,6 @@
     shell: if which vagrant; then vagrant destroy default --force; fi
 #    become: true
 
-#  - name: install virtualbox kernel module
-#    shell: /usr/lib/virtualbox/vboxdrv.sh setup
-#    become: true
-   
   - name: delete old version of vagrant
     become: true
     yum:
@@ -35,11 +31,11 @@
 #    become: true
   
   - name: add Vagrant box
-    vagrant box add Centos/7 --provider=libvirt    
+    shell: vagrant box add Centos/7 --provider=libvirt    
+    become: sudo
 
-  - name: vagrant init
-    shell: vagrant init --force centos/7
-#    become: true
+  - name: Vagrant init
+    shell: Vagrant init --force Centos/7
 
   - name: disabling vagrant rsync
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/Vagrantfile
