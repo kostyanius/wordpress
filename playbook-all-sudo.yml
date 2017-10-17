@@ -28,22 +28,22 @@
 
   - name: install libvirt module
     shell: vagrant plugin install vagrant-libvirt
-#    become: true
+    become: true
   
   - name: add Vagrant box
     shell: vagrant box add Centos/7 --provider=libvirt --force    
-#    become: sudo
+    become: sudo
 
   - name: Vagrant init
-    shell: vagrant init --force centos/7 --provider libvirt
+    shell: vagrant init --force centos/7
 
   - name: disabling vagrant rsync
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
 #    become: true
 
   - name: vagrant up
-    shell:  vagrant up --provider=libvirt
-#   become: true
+    shell: vagrant up --provider=libvirt
+    become: true
 
 #  - name: install virtualbox guest additions 
 #    shell: vagrant plugin install vagrant-vbguest 
@@ -55,79 +55,87 @@
  
   - name: install epel-release on vagrant guest os
     shell: vagrant ssh -c 'sudo yum install -y epel-release wget'
-#    become: true
+    become: true
     
   - name: install XFCE on vagrant guest os
     shell: vagrant ssh -c 'sudo yum groupinstall -y "Xfce"'
-#    become: true
+    become: true
  
   - name: install X11 on vagrant guest os
     shell: vagrant ssh -c 'sudo yum groupinstall -y "X11"'
-#    become: true
+    become: true
      
   - name: install docker repo on vagrant guest os
     shell: vagrant ssh -c 'sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
-#    become: true
+    become: true
     
   - name: install docker on vagrant guest os
     shell: vagrant ssh -c 'sudo yum install -y docker-ce firefox'
-#    become: true
+    become: true
      
   - name: start docker
     shell: vagrant ssh -c 'sudo service docker start'
-#    become: true
+    become: true
   
   - name: enable docker 
     shell: vagrant ssh -c 'sudo chkconfig docker on'
-#    become: true
+    become: true
     
   - name: create docker swarm 
     shell: vagrant ssh -c 'sudo docker swarm init'
-#    become: true 
+    become: true 
 
   - name: deploy overlay network 
     shell: vagrant ssh -c 'sudo docker network create -d overlay net'
-#    become: true
+    become: true
     
   - name: install vagrant scp
     shell: vagrant plugin install vagrant-scp
-#    become: true
+    become: true
     
   - name: copy traefik.yml
-    shell: vagrant scp ~/wordpress/traefik.yml default:~
-#    become: true
+    shell: vagrant scp ~/traefik.yml default:~
+    become: true
 
   - name: copy wordpress.yml
-    shell: vagrant scp ~/wordpress/wordpress.yml default:~
-#    become: true
+    shell: vagrant scp ~/wordpress.yml default:~
+    become: true
         
   - name: deploy proxy
     shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=traefik.yml traefik'
-#    become: true
+    become: true
         
   - name: deploy wordpress
     shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=wordpress.yml wordpress-sticky'
-#    become: true
+    become: true
     
   - name: changing graphical target runlevel
     shell: vagrant ssh -c "sudo systemctl set-default graphical.target"
-#    become: true  
+    become: true  
 
   - name: start GUI 
     shell: vagrant ssh -c 'sudo startx'
-#    become: true 
+    become: true 
 
   - name: add virtualbox repo
     shell: vagrant ssh -c "sudo wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo"
-#    become: true
+    become: true
 
   - name: install virtualbox
     shell: vagrant ssh -c "sudo yum install -y VirtualBox-5.1"
-#    become: true
+    become: true
+
+  - name: install gcc, make, kernel-devel
+    shell: vagrant ssh -c "sudo yum install -y gcc kernel-devel-$(uname -r)"
+    become: true
+
+  - name: install virtualbox kernel module
+    shell: vagrant ssh -c "sudo /usr/lib/virtualbox/vboxdrv.sh setup"
+    become: true
 
   - name: install docker machine
     shell: vagrant ssh -c  "curl -L https://github.com/docker/machine/releases/download/v0.12.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine"
-#   become: true
+    become: true
 
   - name: create docker machine1
     shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-1"
@@ -146,7 +154,7 @@
 
   - name: vagrant halt
     shell: vagrant halt
-#    become: true
+    become: true
 
   - name: virtualbox restart
     command: /usr/lib/virtualbox/vboxdrv.sh restart
@@ -154,11 +162,11 @@
 
   - name: changing vagrantfile parameters
     shell: sed -i -- 's/# config.vm.provider "virtualbox" do |vb|/config.vm.provider "virtualbox" do |vb|/g' ~/Vagrantfile &&  sed -i -- 's/#   vb.memory = "1024"/vb.memory = "1024"/g' ~/Vagrantfile && sed -i -- 's/#   vb.gui = true/vb.gui = true/g' ~/Vagrantfile && sed -i -- 's/# end/end/g' ~/Vagrantfile
-#    become: true
+    become: true
 
   - name: vagrant reload with GUI
     shell: export DISPLAY=':0' && vagrant reload
-#    become: true
+    become: true
 
   - name: print message
     debug:
