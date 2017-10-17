@@ -41,6 +41,12 @@
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
 #    become: true
 
+  - name: enable nested virtualisation (intel)
+    shell: if cat [ `cat /sys/module/kvm_intel/parameters/nestedv`=='N' ]; then sudo rmmod kvm-intel && sudo sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf" && sudo modprobe kvm-intel; fi
+#    become: true
+
+
+
   - name: vagrant up
     shell: vagrant up --provider=libvirt
     become: true
@@ -94,20 +100,20 @@
     become: true
     
   - name: copy traefik.yml
-    shell: vagrant scp ~/traefik.yml default:~
+    shell: vagrant scp ~/wordpress/traefik.yml default:~
     become: true
 
   - name: copy wordpress.yml
-    shell: vagrant scp ~/wordpress.yml default:~
+    shell: vagrant scp ~/wordpress/wordpress.yml default:~
     become: true
         
-  - name: deploy proxy
-    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=traefik.yml traefik'
-    become: true
+#  - name: deploy proxy
+#    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=traefik.yml ~/wordpress/traefik'
+#    become: true
         
-  - name: deploy wordpress
-    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=wordpress.yml wordpress-sticky'
-    become: true
+#  - name: deploy wordpress
+#    shell: vagrant ssh -c 'sudo docker stack deploy --compose-file=wordpress.yml ~/wordpress/wordpress-sticky'
+#    become: true
     
   - name: changing graphical target runlevel
     shell: vagrant ssh -c "sudo systemctl set-default graphical.target"
@@ -122,12 +128,16 @@
     become: true
 
   - name: install virtualbox
-    shell: vagrant ssh -c "sudo yum install -y VirtualBox-5.1"
+    shell: vagrant ssh -c "sudo yum install -y VirtualBox-5.1 gcc make"
     become: true
 
-  - name: install gcc, make, kernel-devel
-    shell: vagrant ssh -c "sudo yum install -y gcc kernel-devel-$(uname -r)"
-    become: true
+  - name: export kernel version
+    shell: vagrant ssh -c "uname -r" > ~/ver
+    become: true 
+
+  - name: install kernel version 
+    shell: vagrant ssh -c "sudo yum install -y kernel-devel-`cat ~/ver`"
+    become: true 
 
   - name: install virtualbox kernel module
     shell: vagrant ssh -c "sudo /usr/lib/virtualbox/vboxdrv.sh setup"
@@ -139,18 +149,22 @@
 
   - name: create docker machine1
     shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-1"
+    become: true 
 
   - name: create docker machine2
     shell: vagrant ssh -c "docker-machine create --driver virtualbox node-2"
+    become: true 
     
   - name: create docker machine2
     shell:  vagrant ssh -c "docker-machine create --driver virtualbox node-3"
+    become: true 
   
   - name: hosts
     shell: vagrant ssh -c "echo $(docker-machine ip node-0) node-0 >> /etc/hosts" && vagrant ssh -c "echo $(docker-machine ip node-1) node-1 >> /etc/hosts" && vagrant ssh -c "echo $(docker-machine ip node-2) node-2 >> /etc/hosts"
     
   - name: init docker swarm 
     shell: vagrant ssh -c "docker-machine ssh node-0 "docker swarm init > ~/swarm""
+    become: true 
 
   - name: vagrant halt
     shell: vagrant halt
