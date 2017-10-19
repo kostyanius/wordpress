@@ -42,11 +42,11 @@
 #    become: true
 
   - name: enable nested virtualisation (intel)
-    shell: if [`cat /proc/cpuinfo | grep -i intel` ]; then sudo rmmod kvm-intel && sudo sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf" && sudo modprobe kvm-intel; fi 
+    shell: if [[ -f "/sys/module/kvm_intel/parameters/nested" && `cat /sys/module/kvm_intel/parameters/nested` = 'N' ]]; then sudo rmmod kvm-intel && sudo sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf" && sudo modprobe kvm-intel; fi  
     become: true
 
   - name: enable nested virtualisation (amd)
-    shell: if [ `cat /proc/cpuinfo | grep -i amd` ]; then sudo rmmod kvm-amd && sudo sh -c "echo 'options kvm-amd nested=1' >> /etc/modprobe.d/dist.conf" && sudo modprobe kvm-amd; fi
+    shell: if [[ -f "/sys/module/kvm_amd/parameters/nested" && `cat /sys/module/kvm_amd/parameters/nested` = '0' ]]; then sudo rmmod kvm-amd && sudo sh -c "echo 'options kvm-amd nested=1' >> /etc/modprobe.d/dist.conf" && sudo modprobe kvm-amd; fi
     become: true
 
   - name: vagrant up
