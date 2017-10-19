@@ -7,7 +7,7 @@ Deploment template on vagrant host with docker images: wordpress, mysql and trae
 ```
 Run this command under root user or another one which is in sudoers list
 ```
-2. cd wordpress && ansible-playbook playbook-all-sudo.yml --ask-sudo-pass        		 
+2. cd wordpress && git checkout develop && ansible-playbook playbook-all-sudo.yml --ask-sudo-pass        		 
 ```
 ```
 3. Once the provision is completed use following credentials for login (user: 'vagrant', password: 'vagrant')
