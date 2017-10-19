@@ -41,7 +41,7 @@
     shell: sed -i -r 's~# config.vm.synced_folder "../data", "/vagrant_data"~config.vm.synced_folder ".", "/vagrant", disabled:\ true~g' $HOME/wordpress/Vagrantfile
 #    become: true
 
-  - name: disabling vagrant rsync
+  - name: add virtio adapter
      shell: sed -i -r 's~# config.vm.network "private_network", ip: "192.168.33.10"~config.vm.network "private_network", ip: "192.168.33.10",\n    nic_type: "virtio"~g' $HOME/wordpress/Vagrantfile
 #     become: true
 
